@@ -20,7 +20,7 @@ fig1 = figure;
 subplot(2, 1, 1)
 p1 = plot(f,P1,"LineWidth",3);
 title("Single-Sided Amplitude Spectrum of voice")
-xlim([0 Boundfreq]);
+xlim([0 boundfreq]);
 xlabel("f (Hz)")
 ylabel("|P1(f)|")
 
@@ -29,7 +29,7 @@ p2 = plot(f, 10*log(P1), "LineWidth",3);
 title("Voice logarithmic spectrum")
 xlabel("f (Hz)")
 ylabel("log(X(f))")
-xlim([0 Boundfreq])
+xlim([0 boundfreq])
 % ylim([-20 0])
 
 fprintf("As we can see, the two main harmonics have frequencies " + ...
