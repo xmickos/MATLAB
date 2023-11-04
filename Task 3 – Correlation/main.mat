@@ -1,1 +1,113 @@
 
+clear global; clc;
+dims = 128;
+SNR = 37;
+S = zeros(1, dims);
+
+
+S(5)  = 1;
+S(10) = 2;
+S(60) = 3;
+
+% Поскольку для того, чтобы получить IFFT из одностороннего спектра, нужно
+% преобразовать его к двустороннему, создадим массив S2:
+S2 = zeros(1, 2*dims - 1);
+S2(128 +  1) = 1;
+S2(128 + 10) = 2;
+S2(128 + 60) = 3;
+
+F = ifft(S, dims);
+
+plot(abs(F));
+xlim([0 length(F) + 1]);
+xlabel('Time');
+ylabel('Amplitude');
+
+Signal = S;
+ 
+%                   ------Задание 2 – Noise Generation------
+
+% Генерация зашумленного сигнала
+NoisedSignal = NoiseGenerator(SNR, Signal);
+
+%                   ------Задание 3 – Powers of Signals------
+
+% Расчет средней мощности сигнала, шума и зашумленного сигнала
+P_Signal = PowerSignal(Signal);
+P_Noise = PowerSignal(NoisedSignal - Signal);
+P_NoisedSignal = PowerSignal(NoisedSignal);
+
+%                   ------Задание 4 – Perseval Theorem------
+
+% Вычисление спектра исходного сигнала
+SignalSpec = abs(fft(Signal)).^2;
+
+% Вычисление спектра шума
+NoiseSpec = abs(fft(NoisedSignal - Signal)).^2;
+
+% Вычисление спектра результирующего сигнала
+NoisedSignalSpec = abs(fft(NoisedSignal)).^2;
+
+% Вычисление средних мощностей спектров сигналов
+P_SignalSpec = PowerSignal(SignalSpec);
+P_NoiseSpec = PowerSignal(NoiseSpec);
+P_NoisedSignalSpec = PowerSignal(NoisedSignalSpec);
+
+% Сравнение средних мощностей сигналов и спектров
+if abs(P_Signal - P_SignalSpec) <= 0.001 && abs(P_Noise - P_NoiseSpec) <= 0.001 && abs(P_NoisedSignal - P_NoisedSignalSpec) <= 0.001
+    disp('True');
+else
+    disp('False');
+end
+
+
+FilteredNoisedSignal = FilterSignal(NoisedSignal);
+
+%                   ------Задание 6 – SNR comparison------
+
+
+snr = 10 * log10(sum(abs(NoisedSignal).^2) / sum(abs(NoisedSignal - FilteredNoisedSignal).^2))
+
+function NoisedSignal = NoiseGenerator(SNR, Signal)
+    % Расчет мощности сигнала
+    signalPower = norm(Signal)^2;
+    
+    % Расчет мощности шума
+    noisePower = signalPower / (10^(SNR/10));
+    
+    % Генерация белого шума
+    if isreal(Signal)
+        Noise = normrnd(0, sqrt(noisePower), size(Signal));
+    else
+        Noise = complex(normrnd(0, sqrt(noisePower/2), size(Signal)), ...
+                        normrnd(0, sqrt(noisePower/2), size(Signal)));
+    end
+    
+    % Сложение сигнала и шума
+    NoisedSignal = Signal + Noise;
+end
+
+
+function power = PowerSignal(Signal)
+    % Расчет средней мощности сигнала
+    power = mean(abs(Signal).^2);
+end
+
+function FilteredNoisedSignal = FilterSignal(NoisedSignal)
+    % Вычисление спектра шума
+    NoisedSignalSpec = fft(NoisedSignal);
+
+    % Определение границ частот для фильтрации
+    freq = linspace(0, 1, length(NoisedSignalSpec));
+    lowerFreq = 15 / (1 / (2 * pi));
+    upperFreq = 55 / (1 / (2 * pi));
+
+    % Применение фильтра
+    NoisedSignalSpec(freq >= lowerFreq & freq <= upperFreq) = 0;
+    % NoisedSignalSpec(freq >= lowerFreq) = 0;
+    % NoisedSignalSpec(freq <= upperFreq) = 0;
+
+    % Обратное преобразование Фурье
+    FilteredNoisedSignal = ifft(NoisedSignalSpec);
+end
+
