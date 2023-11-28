@@ -1,101 +1,75 @@
-function mapping(input_vector)
-    % BPSK созвездие
-    bpsk_symbols = 2 * input_vector - 1;
-    scatterplot(bpsk_symbols);
-    title('BPSK созвездия');
+function [IQ] = mapping(Bit_Tx, Constellation)
+    % Make the different dictionary for BPSK, QPSK, 8PSK, 16QAM constellations
+    % calculate the Bit_depth for each contellation
     
-    % QPSK созвездия
-    qpsk_symbols = (2 * input_vector(1:2:end) - 1) + 1i*(2 * input_vector(2:2:end) - 1);
-    scatterplot(qpsk_symbols);
-    title('QPSK созвездия');
+    [Dictionary, Bit_depth_Dict] = constellation_func(Constellation);
     
-    % 8PSK созвездия
-    % Всего 8 точек <-> между любыми двумя точками угол pi/4 => точки
-    % всевозможные варианты получаются поворотами точки (1, 0) на 0, pi/4,
-    % pi/2 и так далее.
-    phase_offsets = [0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4];
-    eight_psk_symbols = exp(1i * phase_offsets(input_vector + 1));
-    scatterplot(eight_psk_symbols);
-    title('8PSK созвездия');
+    IQ = zeros(2, length(Bit_Tx)/Bit_depth_Dict);
+    fprintf('Dictionary:\nDictionary(1) = %d + %d j,\nDictionary(2) = %d + %d j,\n', ...
+        real(Dictionary(1)), imag(Dictionary(1)), real(Dictionary(2)), imag(Dictionary(2)));
+    fprintf('Dictionary(3) = %d + %d j,\nDictionary(4) = %d + %d j,\n', ...
+        real(Dictionary(3)), imag(Dictionary(3)), real(Dictionary(4)), imag(Dictionary(4)));
+    
+    switch Constellation
+        case 'BPSK'
+            fprintf('BPSK case!\n');
+    %         IQ = zeros(2, length(Bit_Tx)/Bit_depth_Dict);
+            for i = 1 : length(Bit_Tx)                    % for -> parfor
+    %             fprintf('mod = %d\n', mod(i, 2) + 1);
+                IQ(i) = Dictionary(mod(i, 2) + 1);
+            end
+        case 'QPSK'
+            fprintf('QPSK case!\nlength(Bit_Tx) = %d\n', length(Bit_Tx));
+            q = 1;
+            for i = 1 : length(Bit_Tx) - 1                % for -> parfor
+                str = '';
+                str(1) = num2str(Bit_Tx(i));
+                str(2) = num2str(Bit_Tx(i + 1));
+    
+    %             strcat(str, num2str(Bit_Tx(i : i + 3)));
+%                 fprintf("str: %s, str2num(str) = %d, bin2dec(str) + 1 = %d, Dictionary(...) = %d + %d j\n", ...
+%                     str, str2num(str), bin2dec(str) + 1, real(Dictionary(bin2dec(str) + 1)), imag(Dictionary(bin2dec(str) + 1)));
+                IQ(q) = Dictionary(bin2dec(str) + 1);
+%                 fprintf("IQ(%d) = %d + %d j\n", q, real(IQ(q)), imag(IQ(q)));
+                q = q + 1;
+                i = i + 1;
+            end
+        case '8PSK'
+            fprintf("8PSK case!\nlength(Bit_Tx) = %d\n", length(Bit_Tx));
+            q = 1;
+            i = 1;
+            while i <= length(Bit_Tx) - 2
+                str = '';
+                str(1) = num2str(Bit_Tx(i));
+                str(2) = num2str(Bit_Tx(i + 1));
+                str(3) = num2str(Bit_Tx(i + 2));
 
-    % 16-QAM созвездия
-    j = 0;
-    sixtenn_qam_symbols = zeros(int16(length(input_vector)/4), 2);
-    if mod(length(input_vector), 4) ~= 0
-        fprintf("\nInput error: bad input vector.\nExiting...\n");
-        return;
-    end
-    i = 1;
-    while(j < length(input_vector)/4)
-        j = j + 1;
-        var = input_vector(i:i+3);
-        if var == [0 0 0 0]
-            sixtenn_qam_symbols(j, 1) = -3;
-            sixtenn_qam_symbols(j, 2) =  3;
-        end
-        if var == [0 0 0 1]
-            sixtenn_qam_symbols(j, 1) = -3;
-            sixtenn_qam_symbols(j, 2) =  1;
-        end
-        if var == [0 0 1 0]
-            sixtenn_qam_symbols(j, 1) = -3;
-            sixtenn_qam_symbols(j, 2) = -3;
-        end
-        if var == [0 0 1 1]
-            sixtenn_qam_symbols(j, 1) = -3;
-            sixtenn_qam_symbols(j, 2) = -1;
-        end
-        if var == [0 1 0 0]
-            sixtenn_qam_symbols(j, 1) = -1;
-            sixtenn_qam_symbols(j, 2) =  1;
-        end
-        if var == [0 1 0 1]
-            sixtenn_qam_symbols(j, 1) = -1;
-            sixtenn_qam_symbols(j, 2) =  1;
-        end
-        if var == [0 1 1 0]
-            sixtenn_qam_symbols(j, 1) = -1;
-            sixtenn_qam_symbols(j, 2) = -3;
-        end
-        if var == [0 1 1 1]
-            sixtenn_qam_symbols(j, 1) = -1;
-            sixtenn_qam_symbols(j, 2) = -1;
-        end
-        if var == [1 0 0 0]
-            sixtenn_qam_symbols(j, 1) =  3;
-            sixtenn_qam_symbols(j, 2) =  3;
-        end
-        if var == [1 0 0 1]
-            sixtenn_qam_symbols(j, 1) = 3;
-            sixtenn_qam_symbols(j, 2) = 1;
-        end
-        if var == [1 0 1 0]
-            sixtenn_qam_symbols(j, 1) =  3;
-            sixtenn_qam_symbols(j, 2) = -3;
-        end
-        if var == [1 0 1 1]
-            sixtenn_qam_symbols(j, 1) =  3;
-            sixtenn_qam_symbols(j, 2) = -1;
-        end
-        if var == [1 1 0 0]
-            sixtenn_qam_symbols(j, 1) =  1;
-            sixtenn_qam_symbols(j, 2) =  3;
-        end
-        if var == [1 1 0 1]
-            sixtenn_qam_symbols(j, 1) =  1;
-            sixtenn_qam_symbols(j, 2) =  1;
-        end
-        if var == [1 1 1 0]
-            sixtenn_qam_symbols(j, 1) =  1;
-            sixtenn_qam_symbols(j, 2) = -3;
-        end
-        if var == [1 1 1 1]
-            sixtenn_qam_symbols(j, 1) =  1;
-            sixtenn_qam_symbols(j, 2) = -1;
-        end
-        i = i + 4;
-    end
-    scatterplot(sixtenn_qam_symbols);
-    title('16-QAM созвездия');
 
+                IQ(q) = Dictionary(bin2dec(str) + 1);
+                i = i + 3;
+                q = q + 1;
+            end
+    
+    
+        case '16QAM'
+            fprintf('16QAM case!\nlength(Bit_Tx) = %d\n', length(Bit_Tx));
+            q = 1;
+            i = 1;
+            while i <= length(Bit_Tx) - 3
+                str = '';
+                str(1) = num2str(Bit_Tx(i));
+                str(2) = num2str(Bit_Tx(i + 1));
+                str(3) = num2str(Bit_Tx(i + 2));
+                str(4) = num2str(Bit_Tx(i + 3));
+                
+%                 fprintf('bin2dec(Str)+1 = %d, q = %d\n', bin2dec(str) + 1, q);
+
+                IQ(q) = Dictionary(bin2dec(str) + 1);
+                i = i + 4;
+                q = q + 1;
+            end
+    end
+
+    fprintf("Output: IQ_(1) = %d + %d j\n", real(IQ(1)), imag(IQ(1)));
+    fprintf("Output: IQ_(2) = %d + %d j\n", real(IQ(2)), imag(IQ(2)));
 end
