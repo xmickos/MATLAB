@@ -21,13 +21,6 @@ fprintf("\t\t---Mapping---\n");
 
 IQ_TX = mapping(Bit_Tx, Constellation);
 
-fprintf("\nBit_Tx(1) = %d, IQ_TX(1) = %d + %d j\n", Bit_Tx(1, 1), real(IQ_TX(1)),  imag(IQ_TX(1)));
-fprintf("\nBit_Tx(2) = %d, IQ_TX(2) = %d + %d j\n", Bit_Tx(1, 2), real(IQ_TX(2)),  imag(IQ_TX(2)));
-fprintf("\nBit_Tx(3) = %d, IQ_TX(3) = %d + %d j\n", Bit_Tx(1, 3), real(IQ_TX(3)),  imag(IQ_TX(3)));
-fprintf("first 12 bits:\n");
-for k = 1 : 12
-    fprintf("Bit_Tx(k) = %d\n", Bit_Tx(k));
-end
 %% Channel
 
 fprintf("\t\t---Channel---\n");
@@ -38,13 +31,7 @@ Eb_N0 = Eb_N0_convert(SNR, Constellation);
 
 % Use your own function of generating of AWGN from previous tasks
 
-fprintf("Eb_N0 = %f\nlength(IQ_TX) = %d\n", Eb_N0, length(IQ_TX));
 IQ_RX = Noise(IQ_TX, SNR);
-fprintf("IQ_RX(1) = %d + %d j\n", real(IQ_RX(1)), imag(IQ_RX(1)));
-fprintf("IQ_RX(2) = %d + %d j\n", real(IQ_RX(2)), imag(IQ_RX(2)));
-fprintf("IQ_RX(3) = %d + %d j\n", real(IQ_RX(3)), imag(IQ_RX(3)));
-
-
 
 %% Demapping
 
@@ -187,7 +174,7 @@ for i = 1 : 12
     true_bers(4, i) = 1/2*erf(sqrt(Eb_N0));
 end
 
-%%
+%% Построение теоретических графиков BER(Eb_N0)
 
 true_bers = flip(true_bers);
 
