@@ -1,10 +1,10 @@
 function [freq, amp] = raised_cosine_freq(Roll_off, Nsamp, Span)
-    Ts = 1/Nsamp; % время дискретизации
-    t = -Span*Ts:Ts:Span*Ts; % вектор времени
+    Ts = 1/Nsamp; 
+    t = -Span*Ts:Ts:Span*Ts;
     
-    freq = linspace(-0.5/Ts, 0.5/Ts, length(t)); % вектор частот
+    freq = linspace(-0.5/Ts, 0.5/Ts, length(t)); 
     
-    amp = zeros(size(freq)); % инициализация вектора амплитуд
+    amp = zeros(size(freq)); 
     
     for i = 1:length(freq)
         if abs(freq(i)) <= (1-Roll_off)/(2*Ts)
