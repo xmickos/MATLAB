@@ -20,23 +20,23 @@ for i = 1:length(Roll_off_values)
     plot(h);
 end
 
-% Изменение числа выборок на символ
+% Изменение параметра Nsamp
 
 for i = 1:length(Nsamp_values)
-    Roll_off = 0.5; % Значение по умолчанию
+    Roll_off = 0.5; 
     Nsamp = Nsamp_values(i);
-    Span = 8; % Значение по умолчанию
+    Span = 8;
 
     h = raised_cosine(Roll_off, Nsamp, Span);
 
     plot(h);
 end
 
-% Изменение длины импульсной характеристики в символьных интервалах
+% Изменение параметра Span
 
 for i = 1:length(Span_values)
-    Roll_off = 0.5; % Значение по умолчанию
-    Nsamp = 8; % Значение по умолчанию
+    Roll_off = 0.5; 
+    Nsamp = 8; 
     Span = Span_values(i);
 
     h = raised_cosine(Roll_off, Nsamp, Span);
@@ -58,25 +58,21 @@ subplot(2, 1, 2);
 hold on;
 % Изменение параметра Roll_off
 for i = 1:length(Roll_off_values)
-    % subplot(length(Roll_off_values), 1, i);
     [freq, amp] = raised_cosine_freq(Roll_off_values(i), 16, 4);
-    % title(['Roll-off = ', num2str(Roll_off_values(i))]);
-    plot(freq, amp); % построение графика
+    plot(freq, amp); 
 end
 
 
 % Изменение параметра Nsamp
 for i = 1:length(Nsamp_values)
-    % subplot(length(Nsamp_values), 1, i);
     [freq, amp] = raised_cosine_freq(0.5, Nsamp_values(i), 4);
-    plot(freq, amp); % построение графика
+    plot(freq, amp); 
 end
 
 % Изменение параметра Span
 for i = 1:length(Span_values)
-    % subplot(length(Span_values), 1, i);
     [freq, amp] = raised_cosine_freq(0.5, 16, Span_values(i));
-    plot(freq, amp); % построение графика
+    plot(freq, amp); 
 end
 xlabel('Частота');
 ylabel('Амплитуда');
@@ -85,9 +81,6 @@ ylim([0.8, 1.05]);
 hold off;
 
 % savefig("RC_fig.fig");
-
-
-
 
 
 
@@ -128,31 +121,21 @@ hold off;
 
 subplot(2, 1, 2);
 hold on;
-% Параметры функции rootRaisedCosineFreq
-Roll_off_values = [0.2, 0.5, 0.8];
-Nsamp_values = [4, 8, 12];
-Span_values = [10, 20, 30];
 
-% Изменение параметра alpha
 for i = 1:length(Roll_off_values)
-    % subplot(3, 1, i);
     [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(i), Nsamp_values(2), Span_values(2));
-    plot(f, abs(rrc_freq)); % Выводим амплитудно-частотную характеристику
+    plot(f, abs(rrc_freq)); 
 end
 
-% Изменение параметра Fs
 for i = 1:length(Nsamp_values)
-    % subplot(3, 1, i);
     [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(2), Nsamp_values(i), Span_values(2));
-    plot(f, abs(rrc_freq)); % Выводим амплитудно-частотную характеристику
+    plot(f, abs(rrc_freq));
 end
 
 
-% Изменение параметра span
 for i = 1:length(Span_values)
-    % subplot(3, 1, i);
     [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(2), Nsamp_values(2), Span_values(i));
-    plot(f, abs(rrc_freq)); % Выводим амплитудно-частотную характеристику
+    plot(f, abs(rrc_freq)); 
 end
 xlabel('Частота (Гц)');
 ylabel('Амплитуда');
@@ -174,7 +157,6 @@ TX_IQ = mapping (TX_bit, "QPSK");
 filtered_signal = filterIQSignal(TX_IQ, filter_impulse_response);
 
 % АЧХ до фильтрации
-% [f_before, mag_before] = freqz(TX_IQ(:, 1) + 1i*TX_IQ(:, 2));
 [f_before, mag_before] = freqz(TX_IQ);
 
 % АЧХ после фильтрации
