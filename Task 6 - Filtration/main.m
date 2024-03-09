@@ -1,8 +1,8 @@
 close all;
 
-Roll_off_values = [0.2, 0.5, 0.8];
-Nsamp_values = [4, 8, 16];
-Span_values = [4, 8, 12];
+Roll_off_values = [0, 0.5, 1];
+Nsamp_values = [2, 8, 16];
+Span_values = [10, 20, 30];
 
 %%
 figure;
@@ -47,9 +47,9 @@ end
 xlabel('Время');
 ylabel('Значение');
 title('Импульсная характеристика');
-legend('Roll-off = 0.2', 'Roll-off = 0.5', 'Roll-off = 0.8', ...
+legend('Roll-off = 0', 'Roll-off = 0.5', 'Roll-off = 1', ...
     'Nsamp = 4', 'Nsamp = 8', 'Nsamp = 16', ...
-    'Span = 4', 'Span = 8', 'Span = 12');
+    'Span = 10', 'Span = 20', 'Span = 30');
 
 hold off;
 
@@ -94,28 +94,28 @@ subplot(2, 1, 1);
 hold on;
 % Изменение параметра Roll-off
 for i = 1:length(Roll_off_values)
-    rrc = root_raised_cosine(Roll_off_values(i), Nsamp_values(2), Span_values(2));
+    rrc = root_raised_cosine(Roll_off_values(i), Nsamp_values(1), Span_values(1));
     plot(rrc);
 end
 
 % Изменение параметра Nsamp
 for i = 1:length(Nsamp_values)
-    rrc = root_raised_cosine(Roll_off_values(2), Nsamp_values(i), Span_values(2));
+    rrc = root_raised_cosine(Roll_off_values(2), Nsamp_values(i), Span_values(1));
     plot(rrc);
 end
 
 % Изменение параметра Span
 for i = 1:length(Span_values)
-    rrc = root_raised_cosine(Roll_off_values(2), Nsamp_values(2), Span_values(i));
+    rrc = root_raised_cosine(Roll_off_values(2), Nsamp_values(1), Span_values(i));
     plot(rrc);
 end
 title('Импульсная характеристика');
 xlabel('Время');
 ylabel('Значение');
 
-legend('Roll-off = 0.2', 'Roll-off = 0.5', 'Roll-off = 0.8,', ...
-    'Nsamp = 4', 'Nsamp = 8', 'Nsamp = 16,', ...
-    'Span = 4', 'Span = 8', 'Span = 12');
+legend('Roll-off = 0', 'Roll-off = 0.5', 'Roll-off = 1', ...
+    'Nsamp = 4', 'Nsamp = 8', 'Nsamp = 16', ...
+    'Span = 10', 'Span = 20', 'Span = 30');
 hold off;
 
 
@@ -123,19 +123,19 @@ subplot(2, 1, 2);
 hold on;
 
 for i = 1:length(Roll_off_values)
-    [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(i), Nsamp_values(2), Span_values(2));
-    plot(f, abs(rrc_freq)); 
+    [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(i), Nsamp_values(1), Span_values(1));
+    plot(f, rrc_freq); 
 end
 
 for i = 1:length(Nsamp_values)
-    [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(2), Nsamp_values(i), Span_values(2));
-    plot(f, abs(rrc_freq));
+    [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(2), Nsamp_values(i), Span_values(1));
+    plot(f, rrc_freq);
 end
 
 
 for i = 1:length(Span_values)
-    [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(2), Nsamp_values(2), Span_values(i));
-    plot(f, abs(rrc_freq)); 
+    [f, rrc_freq] = root_raised_cosine_freq(Roll_off_values(2), Nsamp_values(1), Span_values(i));
+    plot(f, rrc_freq); 
 end
 xlabel('Частота (Гц)');
 ylabel('Амплитуда');
@@ -154,7 +154,7 @@ TX_bit = randi([0 1], 1, 8000);
 TX_IQ = mapping (TX_bit, "QPSK");
 
 % фильтр
-filtered_signal = filterIQSignal(TX_IQ, filter_impulse_response);
+filtered_signal = filterIQSignal(TX_IQ, filter_impulse_response, 2, 1);
 
 % АЧХ до фильтрации
 [f_before, mag_before] = freqz(TX_IQ);
