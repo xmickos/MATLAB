@@ -1,0 +1,20 @@
+function scores = CalculateScores(syndrome, dict)
+    scores = dictionary;
+    for i = 1:size(dict, 2)
+        a = size(dict(i), 2);
+        printf(dict(1, i));
+        for j = 1:size(dict(i), 2)
+            if(numEntries(scores) == 0 || ~isKey(scores, j))
+                scores(j) = 0;
+            end
+
+            if(isKey(scores, j) && syndrome(i) == 1)
+                scores(j) = scores(j) + 1;
+            end
+
+            if(isKey(scores, j) && syndrome(i) == 0)
+                scores(j) = scores(j) - 1;
+            end
+        end
+    end
+end
