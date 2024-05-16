@@ -1,40 +1,31 @@
-function [Bit] = demapping(IQ_RX, Constellation)
+function [bits_output] = demapping(IQ_RX, Constellation)
 % Make the different dictionary for BPSK, QPSK, 8PSK, 16QAM constellations
 % calculate the Bit_depth for each contellation
-[Dictionary, Bit_depth_Dict] = constellation_func(Constellation);
-
-for k = 1 : 5
-    fprintf("IQ_RX(k) = %d + %d j\n", real(IQ_RX(k)), imag(IQ_RX(k)));
-end
-
 % write  the function of mapping from IQ vector to bit vector
 
-switch Constellation
-    case 'BPSK'
-        decs = Metric(IQ_RX, 'BPSK');
-        fprintf('decs: \n\n');
-        fprintf("%d\n", decs(1));
-        Bit = str2num(dec2bin(decs));
-%         fprintf("bit: %d\n", Bit(1:50));
-    case 'QPSK'
-        decs = Metric(IQ_RX, 'QPSK');
-        fprintf("decs(1 : 4) = %d\n", decs(1 : 4));
-        Bit = str2num(dec2bin(decs - 1));
-%         fprintf("first 8 bits:\n");
-    case '8PSK'
-        decs = Metric(IQ_RX, "8PSK");
-        fprintf('decs(1 : 4) = %d\n', decs(1 : 4));
-        Bit = str2num(dec2bin(decs - 1));
+decs = Metric(IQ_RX, Constellation);
 
-    case '16QAM'
-        decs = Metric(IQ_RX, '16QAM');
-        fprintf("decs(1 : 4) = %d\n", decs(1 : 4));
-        Bit = str2num(dec2bin(decs - 1));
+% Bit = str2num(dec2bin(decs - 1)); % Счёт в созвездиях с нуля, счёт в массивах матлаба с единицы - поэтому -1
+
+Bit = dec2bin(decs - 1);
+
+shape = size(Bit);
+
+% bits_output = reshape(Bit, [1, shape(1) * shape(2)]);
+
+bits_output = zeros(1, size(Bit, 1) * size(Bit, 2));
+
+for i = 1 : shape(1)
+  for j = 1 : shape(2)
+
+    bits_output( (i - 1) * shape(2) + j ) = double(Bit(i, j)) - double('0');
+
+  end
 end
 
-% Bit = 0;
 
-Bit = transpose(Bit);
+
+% bits_output = double(bits_output) - double('0');
 
 end
 

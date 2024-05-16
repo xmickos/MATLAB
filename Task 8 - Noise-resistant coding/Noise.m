@@ -1,4 +1,4 @@
-function NoisedSignal = Noise(Signal, SNR)
+function [NoisedSignal, noisevar] = Noise(Signal, SNR)
     % генерация белого шума с мощностью, заданной в SNR
 
     % вычисление мощности сигнала
@@ -14,4 +14,5 @@ function NoisedSignal = Noise(Signal, SNR)
     
     % сложение сигнала и шума
     NoisedSignal = Signal + Noise;
+    noisevar = sqrt(Pnoise / 2);
 end
