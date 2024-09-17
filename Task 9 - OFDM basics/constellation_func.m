@@ -45,7 +45,7 @@ function [Dictionary, Bit_depth_Dict] = constellation_func(Constellation)
             Bit_depth_Dict = 4;
     end
      
-    norm = norming(Dictionary, Bit_depth_Dict);
+    norm = sqrt(sum(Dictionary.*(conj(Dictionary)))/length(Dictionary));
     Dictionary = Dictionary./norm;
 
 end
